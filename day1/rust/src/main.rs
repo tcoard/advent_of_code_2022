@@ -14,7 +14,9 @@ pub fn main() {
     // surely it isn't me using rust non-idiomatically ;)
     let mut rust_is_stupid: Vec<u32> = calories.to_vec();
     rust_is_stupid.sort();
-    let part2: u32 = rust_is_stupid.as_slice()[rust_is_stupid.len()-3..].iter().sum::<u32>();
+    let part2: u32 = rust_is_stupid.as_slice()[rust_is_stupid.len() - 3..]
+        .iter()
+        .sum::<u32>();
     println!("{:?}", part1);
     println!("{:?}", part2);
 }
