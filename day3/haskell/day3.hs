@@ -1,14 +1,13 @@
 import Data.Char
 import Data.List
 import Data.List.Split
-import Data.Set (Set, elemAt, fromList, intersection)
+import Data.Set (Set, elemAt, fromList, intersection, empty)
 
-getHalf :: [Char] -> Set Char
-getHalf x = fromList $ take (div (length x) 2) x
+getHalf :: String -> Set Char
+getHalf x = fromList $ take (length x `div` 2) x
 
--- was going to make a function, but couldn't get the type signature correct, lol
--- getUnique :: [[Char]] -> Set Char
--- getUnique x = map (\y -> getHalf y `intersection` (getHalf $ reverse y)) x
+getUnique :: [Char] -> Set Char
+getUnique x = getHalf x `intersection` getHalf (reverse x)
 
 getInt :: Char -> Int
 getInt x
@@ -21,7 +20,15 @@ main =
     rawInput <- readFile "../data.txt"
     let input = lines $ rawInput
 
+
+    let one = fromList $ ['a', 'b', 'c']
+    let two = fromList $ ['d', 'b', 'c']
+    let three = fromList $ ['c', 'x', 'y']
+    let test = [one, two, three]
+    print $ foldr intersection (head test) (tail test)
+
+
     -- day 1
-    print $ sum $ map (\x -> getInt $ elemAt 0 $ getHalf x `intersection` (getHalf $ reverse x)) input
+    print $ sum $ map (\x -> getInt $ elemAt 0 $ getUnique x) input
     -- day 2, much more hard coded than I would like
-    print $ sum $ map (\x -> getInt $ elemAt 0 $ (fromList $ x!!0) `intersection` (fromList $ x!!1) `intersection` (fromList $ x!!2)) $ chunksOf 3 input
+    print $ sum $ map (\x -> getInt $ elemAt 0 $ foldr (\y -> intersection $ fromList $ y) (fromList $ head x) (tail x)) $ chunksOf 3 input
