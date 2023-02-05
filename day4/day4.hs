@@ -22,5 +22,5 @@ main =
     rawInput <- readFile "data.txt"
     let input = lines $ rawInput
 
-    print $ sum $ map fromEnum $ map isCompleteOverlap $ map formatData $ map parseLines input
-    print $ sum $ map fromEnum $ map isPartialOverlap $ map formatData $ map parseLines input
+    print $ sum $ map (fromEnum . isCompleteOverlap . formatData . parseLines) input
+    print $ sum $ map (fromEnum . isPartialOverlap . formatData . parseLines) input
