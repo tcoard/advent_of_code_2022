@@ -21,12 +21,25 @@ getIntsFromCommandSentences = mapMaybe readMaybe . words
 seperateCommands :: [Int] -> (Int, Int, Int)
 seperateCommands [amount, from, to] = (amount, from, to)
 
-moveBoxes :: [String] -> (Int, Int, Int) -> [String]
-moveBoxes boxes (amount, from, to) = secondLeft ++ ((reverse items) ++ toBox) : secondRight
+moveBoxesOneAtATime :: [String] -> (Int, Int, Int) -> [String]
+moveBoxesOneAtATime boxes (amount, from, to) = secondLeft ++ ((reverse items) ++ toBox) : secondRight
+  where
+    (secondLeft, items, toBox, secondRight) = splitBoxes boxes (amount, from, to)
+
+moveBoxesMultiAtATime :: [String] -> (Int, Int, Int) -> [String]
+moveBoxesMultiAtATime boxes (amount, from, to) = secondLeft ++ (items ++ toBox) : secondRight
+  where
+    (secondLeft, items, toBox, secondRight) = splitBoxes boxes (amount, from, to)
+
+splitBoxes :: [String] -> (Int, Int, Int) -> ([String], String, String, [String])
+splitBoxes boxes (amount, from, to) = (secondLeft, items, toBox, secondRight)
   where
     (left, fromBox : right) = splitAt from boxes
     (items, modFromBox) = splitAt amount fromBox
     (secondLeft, toBox : secondRight) = splitAt to (left ++ modFromBox : right)
+
+getTopOfStackAtEnd :: [String] -> String
+getTopOfStackAtEnd boxHistory = map head $ init $ tail boxHistory
 
 main :: IO ()
 main =
@@ -36,4 +49,5 @@ main =
     -- "  " if for padding to get correct spacing for the first entry
     let boxes = map (dropWhile isSpace) $ transpose $ map (\x -> parseColumnContents ("  " ++ x)) rawBoxes
     let commands = map (seperateCommands . getIntsFromCommandSentences) commandSentences
-    print $ map head $ init $ tail $ foldl moveBoxes ([""] ++ boxes ++ [""]) commands
+    print $ getTopOfStackAtEnd $ foldl moveBoxesOneAtATime ([""] ++ boxes ++ [""]) commands
+    print $ getTopOfStackAtEnd $ foldl moveBoxesMultiAtATime ([""] ++ boxes ++ [""]) commands
